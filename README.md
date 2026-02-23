@@ -1,0 +1,354 @@
+# NTT MCP Suite (Model Context Protocol Servers)
+
+## 📌 Descripción general
+
+**NTT MCP Suite** es un proyecto interno cuyo objetivo es **integrar, estandarizar y gobernar múltiples servidores MCP (Model Context Protocol)** para que el **equipo de Hacking** pueda **automatizar pruebas, orquestar herramientas y apoyarse en IA** durante actividades de análisis dinámico, reversing y seguridad.
+
+La idea central del proyecto **no es un MCP concreto**, sino crear una **plataforma común** donde:
+
+* 🧠 La IA (Copilot u otros clientes MCP) pueda interactuar con herramientas técnicas.
+* 🔐 El código sea **100% de autoría propia**, protegiendo información de clientes.
+* 🧩 Se puedan integrar **múltiples MCPs especializados** (Frida, tooling interno, análisis estático, etc.).
+* 🚀 El proyecto pueda crecer sin rehacer arquitectura ni romper compatibilidad.
+
+Actualmente, el repositorio incluye **dos MCPs funcionales** como casos de uso iniciales:
+
+* **`ntt-frida-mcp`** → MCP para interactuar con **Frida** (local, emuladores y dispositivos USB).
+* **`ntt-jadx-mcp`** → MCP para análisis estático, extracción y refactor de apps Android vía **Jadx.
+
+Estos MCPs no son el objetivo final del proyecto, sino los primeros MCPs integrados dentro de NTT MCP Suite.
+
+---
+
+## 🧱 Arquitectura del proyecto
+
+```text
+ntt-mcp-suite/
+├── .vscode/
+│   └── mcp.json
+├── scripts/
+│   └── manual_mcp_test_client.py
+├── src/
+│   ├── ntt_frida_mcp/
+│   │   ├── server/
+│   │   └── tools/
+│   ├── ntt_jadx_mcp/
+│   │   ├── server/
+│   │   └── tools/
+│   └── (futuros MCPs)
+│       └── ntt_<otro>_mcp/
+├── pyproject.toml
+├── requirements.txt
+└── README.md
+```
+
+### Principios de arquitectura
+
+* 🧩 Cada MCP vive en su propio paquete (`ntt_<nombre>_mcp`).
+* 🧠 Cada MCP expone herramientas MCP independientes.
+* 🔌 El proyecto actúa como **contenedor de MCPs**, no como una herramienta única.
+* 🧱 MCPs pueden añadirse sin modificar los existentes.
+
+---
+
+## ⚙️ Requisitos del proyecto NTT MCPS
+
+Estos requisitos aplican **al proyecto base**, independientemente de los MCPs que se integren.
+
+* Python **3.10+**
+* Git
+* VSCode (recomendado)
+* GitHub Copilot (opcional, recomendado para uso en modo Agent)
+
+---
+
+## 🚀 Instalación del proyecto base
+
+### 1️⃣ Crear entorno virtual
+
+```bash
+python -m venv .venv
+```
+
+Activar:
+
+* **Windows**
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+* **Linux / macOS**
+
+```bash
+source .venv/bin/activate
+```
+
+### 2️⃣ Instalar dependencias base
+
+```bash
+pip install -r requirements.txt
+```
+
+> El proyecto se instala en modo editable para facilitar el desarrollo e integración de MCPs.
+
+---
+
+## ▶️ Ejecución de MCPs
+
+### VSCode + GitHub Copilot (modo Agent)
+
+1. Abrir el proyecto en VSCode.
+2. Verificar `.vscode/mcp.json`.
+3. Iniciar Copilot Chat en **modo Agent**.
+4. Copilot levantará automáticamente los MCPs configurados.
+
+### Ejecución manual de un MCP
+
+```bash
+.\.venv\Scripts\python.exe -m <paquete_mcp>.server.main
+```
+
+Ejemplo:
+
+```bash
+.\.venv\Scripts\python.exe -m ntt_frida_mcp.server.main
+```
+```bash
+.\.venv\Scripts\python.exe -m ntt_jadx_mcp.server.main
+```
+
+---
+
+## 🧪 Script de verificación manual (proyecto)
+
+El script:
+
+```text
+scripts/manual_mcp_test_client.py
+```
+
+Permite verificar que **el framework MCP funciona correctamente**, sin depender de Copilot:
+
+* Descubrimiento de dispositivos
+* Selección automática de device (Android si existe, si no local)
+* Creación de sesión MCP
+* Ejecución de JavaScript
+* Cierre limpio de sesión
+
+Ejecutar:
+
+```bash
+.\.venv\Scripts\python.exe .\scripts\manual_mcp_test_client.py
+```
+
+---
+
+# 🧠 MCP: ntt-frida-mcp
+
+## ¿Qué es?
+
+`ntt-frida-mcp` es **uno de los MCPs integrados en NTT MCPS**. Su propósito es exponer **Frida** como un conjunto de herramientas MCP para que la IA pueda interactuar con procesos y dispositivos durante pruebas de seguridad.
+
+Este MCP **no define el proyecto**, sino que **demuestra cómo integrar tooling técnico real dentro del ecosistema MCP**.
+
+---
+
+## 🎯 ¿Qué permite hacer?
+
+* Enumerar dispositivos Frida (local, emuladores, USB).
+* Enumerar procesos.
+* Adjuntarse a procesos.
+* Crear sesiones interactivas persistentes.
+* Ejecutar JavaScript dentro del proceso target.
+* Instalar hooks simples (best-effort).
+* Limpiar sesiones automáticamente.
+
+---
+
+## ⚙️ Requisitos específicos de ntt-frida-mcp
+
+Estos requisitos **solo aplican si se usa este MCP**:
+
+* Frida instalado en el host
+* Frida compatible con el target
+* Para Android:
+
+  * Emulador o dispositivo físico
+  * `frida-server` ejecutándose en el dispositivo
+
+---
+
+## 🧰 Herramientas expuestas por ntt-frida-mcp
+
+### 🔹 Dispositivos y procesos
+
+* `enumerate_devices`
+* `get_device`
+* `get_usb_device`
+* `enumerate_processes(device_id=None)`
+* `list_processes(device_id=None)`
+* `get_process_by_name(name, device_id=None)`
+
+### 🔹 Ciclo de vida de procesos
+
+* `spawn_process(program, args, device_id=None)`
+* `resume_process(pid, device_id=None)`
+* `kill_process(pid, device_id=None)`
+
+### 🔹 Sesiones interactivas
+
+* `create_interactive_session(process_id, device_id=None)`
+* `execute_in_session(session_id, javascript_code)`
+* `close_interactive_session(session_id)`
+
+### 🔹 Hooks simples (best-effort)
+
+* `create_simple_hook(process_id, hook_type, device_id=None)`
+
+  * `hook_type`: `network`, `file`, `memory`
+
+> ⚠️ Los hooks dependen de la plataforma y del proceso. Si no aplican, el MCP devuelve errores claros (`installed: false`).
+
+---
+
+## 💬 Ejemplos de prompts (Copilot Agent)
+
+### Enumerar dispositivos
+
+> "Enumera los dispositivos disponibles usando el MCP."
+
+### Enumerar procesos en Android
+
+> "Enumera los procesos del dispositivo USB disponible."
+
+### Crear sesión interactiva
+
+> "Crea una sesión interactiva contra el proceso system_server."
+
+### Ejecutar JavaScript
+
+> "En la sesión activa, ejecuta JavaScript para mostrar Process.id y Process.platform."
+
+### Cerrar sesión
+
+> "Cierra la sesión interactiva actual."
+
+---
+
+## 🧹 Limpieza y estabilidad
+
+* Las sesiones interactivas tienen **TTL automático**.
+* Existe un **cleaner daemon** que libera sesiones inactivas.
+* Se recomienda cerrar sesiones explícitamente cuando ya no se usen.
+
+---
+
+## 🔐 Seguridad y buenas prácticas
+
+* Los MCPs se ejecutan por `stdio` (no exponen red por defecto).
+* El JavaScript ejecutado dentro de procesos es responsabilidad del usuario.
+* Evitar ejecutar scripts no auditados en procesos sensibles.
+
+---
+
+# 🧠 MCP: ntt-jadx-mcp
+
+## ¿Qué es?
+
+`ntt-jadx-mcp` es otro MCP integrado en NTT MCPS. Su propósito es exponer capacidades avanzadas de análisis estático, extracción de información y refactorización sobre APKs Android mediante **Jadx**.
+
+---
+
+## 🎯 ¿Qué permite hacer?
+
+* Extraer y listar clases, métodos y fields de una APK Android.
+* Obtener código fuente Java/Smali y recursos.
+* Buscar clases/métodos/fields por nombre o keyword.
+* Consultar strings y recursos de la app.
+* Refactorizar: renombrar clases, métodos, paquetes o variables.
+* Operaciones de depuración sobre simbolización estática (stack frames, threads, variables).
+* Descubrir clases principales o actividades (AndroidManifest, main activity).
+
+---
+
+## ⚙️ Requisitos específicos de ntt-jadx-mcp
+
+Estos requisitos **solo aplican si se usa este MCP**:
+
+* Jadx instalado y/o disponible como servicio (Jadx server debe estar operativo).
+* Tener la APK objetivo cargada/anotada para análisis.
+
+---
+
+## 🧰 Herramientas expuestas por ntt-jadx-mcp
+
+### 🔹 Análisis de clases y código
+
+* `get_all_classes`, `get_class_source`, `get_methods_of_class`, `get_fields_of_class`
+* `get_smali_of_class`, `get_main_application_classes_code`
+* `get_main_activity_class`, `get_main_application_classes_names`
+
+### 🔹 Recursos y strings
+
+* `get_android_manifest`
+* `get_strings`
+* `get_all_resource_file_names`, `get_resource_file`
+
+### 🔹 Búsqueda y referencias cruzadas
+
+* `search_classes_by_keyword`
+* `search_method_by_name`
+* `get_method_by_name`
+* `get_xrefs_to_class`, `get_xrefs_to_method`, `get_xrefs_to_field`
+
+### 🔹 Refactor y debug
+
+* `rename_class`, `rename_method`, `rename_field`, `rename_package`, `rename_variable`
+* `debug_get_stack_frames`, `debug_get_threads`, `debug_get_variables`
+
+---
+
+## 💬 Ejemplos de prompts (Copilot Agent)
+
+### Listar clases y métodos de una APK
+
+> "Lista todas las clases del APK cargado usando el MCP Jadx."
+
+### Buscar por palabra clave
+
+> "Busca clases relacionadas con 'login' en el APK vía Jadx MCP."
+
+### Obtener y modificar código
+
+> "Obtén el código smali de la clase MainActivity."
+> "Renombra el método 'checkLogin' de la clase 'AuthManager' por 'verificarIngreso'."
+
+---
+
+## 🧹 Limpieza y estabilidad
+
+* Las operaciones sobre la APK no persisten cambios sobre el archivo original.
+* Refactorizaciones y búsquedas son in-memory hasta ser exportadas.
+
+---
+
+## 🔐 Seguridad y buenas prácticas
+
+* El MCP solo procesa APKs testadas/autorizadas internamente.
+* El análisis estático no ejecuta código malicioso ni toca dispositivos físicos.
+
+---
+
+## 📈 Estado del proyecto
+
+* ✅ Framework MCP estable para uso interno.
+* ✅ `ntt-frida-mcp` validado en Android (emuladores y USB).
+* ✅ `ntt-jadx-mcp` integrado y validado para análisis estático de APKs.
+* 🚧 Se integrarán nuevos MCPs según necesidades del equipo.
+
+---
+
+## 📬 Soporte
+
+Para dudas, mejoras o propuestas de nuevos MCPs, contactar con el equipo responsable de **NTT MCP Suite**.

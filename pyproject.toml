@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+# Nombre del DISTRIBUTION/PACKAGE del repo (no del import de Python)
+name = "ntt-mcps"
+version = "0.1.0"
+description = "NTT MCPS: collection of internal MCP servers (Frida, Jadx, and more)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "NTT DATA" }]
+
+dependencies = [
+  # MCP SDK
+  "mcp==1.25.0",
+
+  # ntt_frida_mcp
+  "frida==17.6.0",
+
+  # ntt_jadx_mcp (cliente local-only al plugin)
+  "httpx>=0.27.0",
+]
+
+[project.scripts]
+# Servidores MCP (stdio)
+ntt-frida-server = "ntt_frida_mcp.server.main:main"
+ntt-jadx-server = "ntt_jadx_mcp.server.main:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
