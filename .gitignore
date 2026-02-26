@@ -26,7 +26,6 @@ ENV/
 !.env.example
 
 # ── IDEs y editores ───────────────────────────────────────────────────────────
-.vscode/
 .idea/
 *.swp
 *.swo
