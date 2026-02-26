@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Plugin-Class: com.ntt.jadxmcp.NttJadxMcpPlugin
+Plugin-Id: ntt_jadx_mcp_plugin
+Plugin-Version: 1.0.0
+
