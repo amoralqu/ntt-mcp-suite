@@ -276,7 +276,8 @@ Estos requisitos **solo aplican si se usa este MCP**:
 
 Estos requisitos **solo aplican si se usa este MCP**:
 
-* Jadx instalado y/o disponible como servicio (Jadx server debe estar operativo).
+* Jadx GUI instalado.
+* Plugin ntt_jadx_mcp_plugin instalado en el Jadx GUI  `ntt_jadx_mcp_plugin/README.md`.
 * Tener la APK objetivo cargada/anotada para análisis.
 
 ---
