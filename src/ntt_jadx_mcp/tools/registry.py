@@ -3,7 +3,7 @@ from __future__ import annotations
 from mcp.server.fastmcp import FastMCP
 
 from ntt_jadx_mcp.tools.health import health_check
-from ntt_jadx_mcp.tools import class_tools, search_tools, resource_tools, refactor_tools, debug_tools, xrefs_tools
+from ntt_jadx_mcp.tools import class_tools, search_tools, resource_tools, refactor_tools, debug_tools, xrefs_tools, security_tools
 
 
 def register_all(mcp: FastMCP) -> None:
@@ -49,3 +49,12 @@ def register_all(mcp: FastMCP) -> None:
     mcp.tool()(xrefs_tools.get_xrefs_to_class)
     mcp.tool()(xrefs_tools.get_xrefs_to_method)
     mcp.tool()(xrefs_tools.get_xrefs_to_field)
+
+    # Security tools
+    mcp.tool()(security_tools.analyze_security_vulnerabilities)
+    mcp.tool()(security_tools.find_dangerous_api_usage)
+    mcp.tool()(security_tools.detect_hardcoded_credentials)
+    mcp.tool()(security_tools.analyze_crypto_usage)
+    mcp.tool()(security_tools.find_exported_components)
+    mcp.tool()(security_tools.analyze_permissions_usage)
+    mcp.tool()(security_tools.scan_for_common_vulnerabilities)
