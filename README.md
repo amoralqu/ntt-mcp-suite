@@ -11,10 +11,11 @@ La idea central del proyecto **no es un MCP concreto**, sino crear una **platafo
 * 🧩 Se puedan integrar **múltiples MCPs especializados** (Frida, tooling interno, análisis estático, etc.).
 * 🚀 El proyecto pueda crecer sin rehacer arquitectura ni romper compatibilidad.
 
-Actualmente, el repositorio incluye **dos MCPs funcionales** como casos de uso iniciales:
+Actualmente, el repositorio incluye **tres MCPs funcionales** como casos de uso iniciales:
 
 * **`ntt-frida-mcp`** → MCP para interactuar con **Frida** (local, emuladores y dispositivos USB).
-* **`ntt-jadx-mcp`** → MCP para análisis estático, extracción y refactor de apps Android vía **Jadx.
+* **`ntt-jadx-mcp`** → MCP para análisis estático, extracción y refactor de apps Android vía **Jadx**.
+* **`ntt-objection-mcp`** → MCP para exploración y análisis de aplicaciones móviles mediante **Objection**.
 
 Estos MCPs no son el objetivo final del proyecto, sino los primeros MCPs integrados dentro de NTT MCP Suite.
 
@@ -341,11 +342,119 @@ Estos requisitos **solo aplican si se usa este MCP**:
 
 ---
 
+# 🧠 MCP: ntt-objection-mcp
+
+## ¿Qué es?
+
+`ntt-objection-mcp` es otro MCP integrado en NTT MCPS. Su propósito es exponer **Objection** como un conjunto de herramientas MCP para facilitar la exploración y análisis de aplicaciones móviles (Android e iOS) mediante Frida, proporcionando una interfaz de alto nivel para tareas comunes de seguridad móvil.
+
+---
+
+## 🎯 ¿Qué permite hacer?
+
+* Enumerar dispositivos disponibles (local, USB, remotos).
+* Listar aplicaciones instaladas en dispositivos.
+* Obtener información detallada de aplicaciones específicas.
+* Identificar la aplicación en primer plano.
+* Explorar clases Java/Objective-C con filtrado por patrones.
+* Explorar métodos de clases específicas.
+* Listar Activities de aplicaciones Android.
+* Listar Services de aplicaciones Android.
+
+---
+
+## ⚙️ Requisitos específicos de ntt-objection-mcp
+
+Estos requisitos **solo aplican si se usa este MCP**:
+
+* Frida instalado en el host
+* Objection instalado (`pip install objection`)
+* Para Android:
+
+  * Emulador o dispositivo físico
+  * `frida-server` ejecutándose en el dispositivo
+
+* Para iOS:
+
+  * Dispositivo con jailbreak
+  * `frida-server` instalado en el dispositivo
+
+---
+
+## 🧰 Herramientas expuestas por ntt-objection-mcp
+
+### 🔹 Gestión de dispositivos
+
+* `enumerate_devices`
+* `get_device(device_id=None)`
+* `get_usb_device(timeout=5)`
+
+### 🔹 Gestión de aplicaciones
+
+* `list_applications(device_id=None)`
+* `get_frontmost_application(device_id=None)`
+* `get_application_info(app_identifier, device_id=None)`
+
+### 🔹 Exploración de aplicaciones
+
+* `explore_classes(app_identifier, device_id=None, pattern=None)`
+* `explore_methods(app_identifier, class_name, device_id=None)`
+* `explore_activities(app_identifier, device_id=None)`
+* `explore_services(app_identifier, device_id=None)`
+
+---
+
+## 💬 Ejemplos de prompts (Copilot Agent)
+
+### Enumerar dispositivos
+
+> "Lista los dispositivos disponibles usando ntt-objection-mcp."
+
+### Listar aplicaciones en dispositivo USB
+
+> "Muestra todas las aplicaciones instaladas en el dispositivo USB."
+
+### Obtener aplicación en primer plano
+
+> "¿Qué aplicación está actualmente en primer plano en el dispositivo?"
+
+### Explorar clases de una aplicación
+
+> "Explora las clases de la aplicación com.example.app que contengan 'Auth' en su nombre."
+
+### Explorar métodos de una clase
+
+> "Muestra todos los métodos de la clase com.example.app.MainActivity."
+
+### Listar Activities de Android
+
+> "Lista todas las Activities de la aplicación com.android.settings."
+
+---
+
+## 🧹 Limpieza y estabilidad
+
+* Las sesiones de exploración tienen **timeout de 2 segundos por defecto** para scripts Frida.
+* Se recomienda que la aplicación objetivo esté en ejecución para operaciones de exploración.
+* Las operaciones de listado de aplicaciones funcionan sin necesidad de que las apps estén activas.
+
+---
+
+## 🔐 Seguridad y buenas prácticas
+
+* Los MCPs se ejecutan por `stdio` (no exponen red por defecto).
+* Las operaciones de exploración requieren permisos de instrumentación en el dispositivo.
+* Evitar explorar aplicaciones no autorizadas o en dispositivos no controlados.
+* Los scripts Frida ejecutados son controlados y limitados en alcance.
+
+---
+
 ## 📈 Estado del proyecto
 
 * ✅ Framework MCP estable para uso interno.
 * ✅ `ntt-frida-mcp` validado en Android (emuladores y USB).
 * ✅ `ntt-jadx-mcp` integrado y validado para análisis estático de APKs.
+* ✅ `ntt-objection-mcp` integrado y validado para exploración de apps móviles.
 * 🚧 Se integrarán nuevos MCPs según necesidades del equipo.
 
 ---

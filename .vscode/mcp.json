@@ -11,6 +11,11 @@
       "env": {
         "NTT_JADX_PORT": "8650"
       }
+    },
+    "ntt-objection-mcp": {
+      "type": "stdio",
+      "command": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+      "args": ["-m", "ntt_objection_mcp.server.main"]
     }
   }
 }
