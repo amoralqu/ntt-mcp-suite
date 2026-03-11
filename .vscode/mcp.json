@@ -16,6 +16,14 @@
       "type": "stdio",
       "command": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
       "args": ["-m", "ntt_objection_mcp.server.main"]
+    },
+    "ntt-adb-mcp": {
+      "type": "stdio",
+      "command": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+      "args": ["-m", "ntt_adb_mcp.server.main"],
+      "env": {
+        "ADB_PATH": "C:\\AND\\platform-tools\\adb.exe"
+      }
     }
   }
 }
