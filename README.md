@@ -449,12 +449,224 @@ Estos requisitos **solo aplican si se usa este MCP**:
 
 ---
 
+# 🧠 MCP: ntt-adb-mcp
+
+## ¿Qué es?
+
+`ntt-adb-mcp` es otro MCP integrado en NTT MCPS. Su propósito es exponer **Android Debug Bridge (ADB)** como un conjunto de herramientas MCP para facilitar la gestión de dispositivos Android, instalación de aplicaciones, ejecución de comandos y operaciones de archivos durante pruebas de seguridad.
+
+---
+
+## 🎯 ¿Qué permite hacer?
+
+* Enumerar dispositivos Android conectados (emuladores y dispositivos físicos).
+* Obtener información detallada de dispositivos.
+* Listar aplicaciones instaladas en dispositivos.
+* Instalar y desinstalar APKs.
+* Iniciar y detener aplicaciones.
+* Ejecutar comandos shell en dispositivos.
+* Transferir archivos entre el host y dispositivos (pull/push).
+* Capturar logs del sistema (logcat).
+* Tomar capturas de pantalla.
+* Reiniciar dispositivos.
+
+---
+
+## ⚙️ Requisitos específicos de ntt-adb-mcp
+
+Estos requisitos **solo aplican si se usa este MCP**:
+
+* Android SDK Platform-Tools instalado (adb debe estar en PATH).
+* Para dispositivos físicos:
+
+  * Depuración USB habilitada en el dispositivo.
+  * Drivers USB apropiados instalados.
+
+* Para emuladores:
+
+  * Android Emulator en ejecución.
+
+---
+
+## 🧰 Herramientas expuestas por ntt-adb-mcp
+
+### 🔹 Gestión de dispositivos
+
+* `list_devices`
+* `get_device_info(device_id=None)`
+* `get_device_state(device_id=None)`
+
+### 🔹 Gestión de aplicaciones
+
+* `list_packages(device_id=None, filter=None)`
+* `get_package_info(package_name, device_id=None)`
+* `install_apk(apk_path, device_id=None)`
+* `uninstall_package(package_name, device_id=None)`
+* `start_activity(package_name, activity_name, device_id=None)`
+* `stop_app(package_name, device_id=None)`
+* `clear_app_data(package_name, device_id=None)`
+
+### 🔹 Operaciones de shell y archivos
+
+* `execute_shell_command(command, device_id=None)`
+* `pull_file(remote_path, local_path, device_id=None)`
+* `push_file(local_path, remote_path, device_id=None)`
+* `list_directory(path, device_id=None)`
+* `get_logcat(filter=None, device_id=None)`
+* `clear_logcat(device_id=None)`
+* `reboot_device(device_id=None)`
+* `take_screenshot(output_path, device_id=None)`
+
+---
+
+## 💬 Ejemplos de prompts (Copilot Agent)
+
+### Listar dispositivos
+
+> "Lista todos los dispositivos Android conectados usando ntt-adb-mcp."
+
+### Instalar una APK
+
+> "Instala la APK ubicada en /path/to/app.apk en el dispositivo conectado."
+
+### Listar aplicaciones instaladas
+
+> "Muestra todas las aplicaciones instaladas en el dispositivo."
+
+### Ejecutar comando shell
+
+> "Ejecuta el comando 'pm list packages -3' en el dispositivo para listar apps de terceros."
+
+### Obtener logs de la aplicación
+
+> "Obtén los logs de logcat filtrados por 'MyApp'."
+
+### Capturar pantalla
+
+> "Toma una captura de pantalla y guárdala en /path/to/screenshot.png."
+
+---
+
+## 🧹 Limpieza y estabilidad
+
+* Los comandos de ADB tienen timeout configurable para evitar bloqueos.
+* Las operaciones de archivo verifican la existencia de rutas antes de ejecutar.
+* Se recomienda verificar el estado del dispositivo antes de operaciones críticas.
+
+---
+
+## 🔐 Seguridad y buenas prácticas
+
+* Los MCPs se ejecutan por `stdio` (no exponen red por defecto).
+* Los comandos shell ejecutados son responsabilidad del usuario.
+* Evitar ejecutar comandos que puedan comprometer la estabilidad del dispositivo.
+* Las operaciones de instalación/desinstalación requieren permisos apropiados en el dispositivo.
+
+---
+
+# 🧠 MCP: ntt-burp-mcp
+
+## ¿Qué es?
+
+`ntt-burp-mcp` es otro MCP integrado en NTT MCPS. Su propósito es exponer **Burp Suite Professional** como un conjunto de herramientas MCP para facilitar el análisis de seguridad de aplicaciones web, mediante la automatización de escaneos, gestión del proxy y análisis de vulnerabilidades.
+
+---
+
+## 🎯 ¿Qué permite hacer?
+
+* Iniciar escaneos de seguridad automatizados (crawl y audit).
+* Monitorear el estado y progreso de escaneos.
+* Obtener vulnerabilidades detectadas con detalles completos.
+* Detener escaneos en curso.
+* Obtener métricas de escaneos realizados.
+* Acceder al historial del proxy HTTP.
+* Enviar peticiones al Repeater y al Intruder.
+* Consultar y actualizar la configuración del proxy.
+
+---
+
+## ⚙️ Requisitos específicos de ntt-burp-mcp
+
+Estos requisitos **solo aplican si se usa este MCP**:
+
+* Burp Suite Professional con REST API habilitada.
+* Python 3.8 o superior.
+* Paquete `requests` instalado.
+* Burp Suite en ejecución con la REST API configurada (puerto por defecto: 1337).
+
+---
+
+## 🧰 Herramientas expuestas por ntt-burp-mcp
+
+### 🔹 Scanner
+
+* `start_scan(target_url, scan_type)`
+* `get_scan_status(scan_id)`
+* `get_scan_issues(scan_id)`
+* `stop_scan(scan_id)`
+* `get_scan_metrics(scan_id)`
+
+### 🔹 Proxy
+
+* `get_proxy_history(limit=None)`
+* `get_proxy_item(item_id)`
+* `send_to_repeater(item_id)`
+* `send_to_intruder(item_id)`
+* `get_proxy_config()`
+* `update_proxy_config(config)`
+
+---
+
+## 💬 Ejemplos de prompts (Copilot Agent)
+
+### Iniciar un escaneo
+
+> "Inicia un escaneo de seguridad completo en https://example.com usando Burp Suite."
+
+### Consultar estado del escaneo
+
+> "¿Cuál es el estado actual del escaneo con ID 'scan_123'?"
+
+### Obtener vulnerabilidades
+
+> "Muestra todas las vulnerabilidades encontradas en el escaneo 'scan_123'."
+
+### Ver historial del proxy
+
+> "Lista las últimas 50 peticiones interceptadas por el proxy de Burp."
+
+### Enviar al Repeater
+
+> "Envía la petición con ID 'item_456' al Repeater para análisis manual."
+
+---
+
+## 🧹 Limpieza y estabilidad
+
+* Las peticiones a la REST API tienen timeout configurable (por defecto: 30 segundos).
+* Los escaneos pueden detenerse en cualquier momento sin afectar otros procesos.
+* Se recomienda monitorear el uso de recursos de Burp Suite durante escaneos extensos.
+
+---
+
+## 🔐 Seguridad y buenas prácticas
+
+* Los MCPs se ejecutan por `stdio` (no exponen red por defecto).
+* La REST API de Burp Suite puede protegerse con API Key.
+* Solo escanear aplicaciones con autorización explícita.
+* Configurar el proxy solo en entornos de prueba controlados.
+* La REST API solo está disponible en Burp Suite Professional.
+
+---
+
 ## 📈 Estado del proyecto
 
 * ✅ Framework MCP estable para uso interno.
 * ✅ `ntt-frida-mcp` validado en Android (emuladores y USB).
 * ✅ `ntt-jadx-mcp` integrado y validado para análisis estático de APKs.
 * ✅ `ntt-objection-mcp` integrado y validado para exploración de apps móviles.
+* ✅ `ntt-adb-mcp` integrado y validado para gestión de dispositivos Android.
+* ✅ `ntt-burp-mcp` integrado y validado para análisis de seguridad web con Burp Suite Professional.
 * 🚧 Se integrarán nuevos MCPs según necesidades del equipo.
 
 ---

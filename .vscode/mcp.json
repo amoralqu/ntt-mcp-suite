@@ -24,6 +24,15 @@
       "env": {
         "ADB_PATH": "C:\\AND\\platform-tools\\adb.exe"
       }
+    },
+    "ntt-burp-mcp": {
+      "type": "stdio",
+      "command": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+      "args": ["-m", "ntt_burp_mcp.server.main"],
+      "env": {
+        "BURP_API_URL": "http://127.0.0.1:1337",
+        "BURP_API_KEY": ""
+      }
     }
   }
 }
