@@ -33,6 +33,16 @@
         "BURP_API_URL": "http://127.0.0.1:1337",
         "BURP_API_KEY": ""
       }
+    },
+    "ntt-nuclei-mcp": {
+      "type": "stdio",
+      "command": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+      "args": ["-m", "ntt_nuclei_mcp.server.main"],
+      "env": {
+        "NUCLEI_PATH": "C:\\tools\\nuclei\\nuclei.exe",
+        "NUCLEI_TEMPLATES_PATH": "C:\\Users\\amoralqu\\nuclei-templates",
+        "NUCLEI_TIMEOUT": "300"
+      }
     }
   }
 }

@@ -11,11 +11,14 @@ La idea central del proyecto **no es un MCP concreto**, sino crear una **platafo
 * 🧩 Se puedan integrar **múltiples MCPs especializados** (Frida, tooling interno, análisis estático, etc.).
 * 🚀 El proyecto pueda crecer sin rehacer arquitectura ni romper compatibilidad.
 
-Actualmente, el repositorio incluye **tres MCPs funcionales** como casos de uso iniciales:
+Actualmente, el repositorio incluye **varios MCPs funcionales** como casos de uso iniciales:
 
 * **`ntt-frida-mcp`** → MCP para interactuar con **Frida** (local, emuladores y dispositivos USB).
 * **`ntt-jadx-mcp`** → MCP para análisis estático, extracción y refactor de apps Android vía **Jadx**.
 * **`ntt-objection-mcp`** → MCP para exploración y análisis de aplicaciones móviles mediante **Objection**.
+* **`ntt-adb-mcp`** → MCP para gestión de dispositivos Android mediante **ADB**.
+* **`ntt-burp-mcp`** → MCP para análisis de seguridad web con **Burp Suite Professional**.
+* **`ntt-nuclei-mcp`** → MCP para escaneo automatizado de vulnerabilidades mediante **Nuclei**.
 
 Estos MCPs no son el objetivo final del proyecto, sino los primeros MCPs integrados dentro de NTT MCP Suite.
 
@@ -115,8 +118,10 @@ Ejemplo:
 ```bash
 .\.venv\Scripts\python.exe -m ntt_frida_mcp.server.main
 ```
-```bash
 .\.venv\Scripts\python.exe -m ntt_jadx_mcp.server.main
+```
+```bash
+.\.venv\Scripts\python.exe -m ntt_nuclei_mcp.server.main
 ```
 
 ---
@@ -659,6 +664,101 @@ Estos requisitos **solo aplican si se usa este MCP**:
 
 ---
 
+# 🧠 MCP: ntt-nuclei-mcp
+
+## ¿Qué es?
+
+`ntt-nuclei-mcp` es otro MCP integrado en NTT MCPS. Su propósito es exponer **Nuclei** como un conjunto de herramientas MCP para facilitar el escaneo automatizado de vulnerabilidades en aplicaciones web y servicios mediante templates de detección actualizables.
+
+---
+
+## 🎯 ¿Qué permite hacer?
+
+* Ejecutar escaneos de vulnerabilidades automatizados contra targets web.
+* Filtrar escaneos por severidad (info, low, medium, high, critical).
+* Buscar vulnerabilidades específicas usando templates y tags.
+* Detectar CVEs conocidos en servicios expuestos.
+* Listar templates disponibles con filtros.
+* Actualizar la base de datos de templates automáticamente.
+* Configurar rate limiting para escaneos controlados.
+* Obtener información de versión y estado de Nuclei.
+
+---
+
+## ⚙️ Requisitos específicos de ntt-nuclei-mcp
+
+Estos requisitos **solo aplican si se usa este MCP**:
+
+* Nuclei instalado y accesible en el sistema.
+* Templates de Nuclei actualizados (descargados automáticamente).
+* Conexión a Internet (para actualización de templates).
+* Python 3.8 o superior.
+
+---
+
+## 🧰 Herramientas expuestas por ntt-nuclei-mcp
+
+### 🔹 Escaneo de vulnerabilidades
+
+* `run_nuclei_scan(target, templates=None, severity=None, tags=None, exclude_tags=None, timeout=None, rate_limit=None)`
+* `health_check()`
+* `get_nuclei_version()`
+
+### 🔹 Gestión de templates
+
+* `list_templates(severity=None, tags=None)`
+* `update_templates()`
+
+---
+
+## 💬 Ejemplos de prompts (Copilot Agent)
+
+### Escanear un sitio web
+
+> "Ejecuta un escaneo con Nuclei en https://example.com para buscar vulnerabilidades críticas y altas."
+
+### Buscar CVEs específicos
+
+> "Escanea https://testsite.com usando templates de CVEs con Nuclei."
+
+### Listar templates disponibles
+
+> "Muestra los templates de Nuclei disponibles para vulnerabilidades críticas."
+
+### Actualizar templates
+
+> "Actualiza los templates de Nuclei a la última versión."
+
+### Escaneo con rate limiting
+
+> "Escanea https://target.com con Nuclei limitado a 50 requests por segundo."
+
+### Obtener versión de Nuclei
+
+> "¿Qué versión de Nuclei está instalada?"
+
+---
+
+## 🧹 Limpieza y estabilidad
+
+* Los escaneos tienen timeout configurable (por defecto 5 minutos).
+* Se recomienda usar rate limiting apropiado para evitar sobrecargar targets.
+* Los templates se actualizan automáticamente desde el repositorio oficial.
+* Los resultados se procesan y estructuran en formato JSON.
+
+---
+
+## 🔐 Seguridad y buenas prácticas
+
+* Los MCPs se ejecutan por `stdio` (no exponen red por defecto).
+* Solo escanear objetivos con autorización explícita.
+* Nuclei puede generar tráfico significativo; usar rate limiting apropiado.
+* Algunos escaneos pueden ser detectados por WAFs/IDS.
+* Respetar términos de servicio y políticas de escaneo de los targets.
+* Los templates oficiales son mantenidos por ProjectDiscovery.
+
+---
+
 ## 📈 Estado del proyecto
 
 * ✅ Framework MCP estable para uso interno.
@@ -667,6 +767,7 @@ Estos requisitos **solo aplican si se usa este MCP**:
 * ✅ `ntt-objection-mcp` integrado y validado para exploración de apps móviles.
 * ✅ `ntt-adb-mcp` integrado y validado para gestión de dispositivos Android.
 * ✅ `ntt-burp-mcp` integrado y validado para análisis de seguridad web con Burp Suite Professional.
+* ✅ `ntt-nuclei-mcp` integrado y validado para escaneo de vulnerabilidades con Nuclei.
 * 🚧 Se integrarán nuevos MCPs según necesidades del equipo.
 
 ---
